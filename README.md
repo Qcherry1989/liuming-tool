@@ -67,4 +67,16 @@ HTML、MD 和密码包不需要外部库；PDF / DOCX 第一次处理会从 jsDe
 
 `node --check app.js` 检查语法。`tests/core.test.cjs` 验证保留 HTML 原文、转义、声明配置、MD front matter 和密码加解密。浏览器测试可访问 `tests/browser.html`。
 
-此部署包没有附带真实平台网址；部署成功后以平台返回的网址为准。
+网站地址：https://qcherry1989.github.io/liuming-tool/
+
+## 自动推荐与新版说明
+
+上传新文件后，导出方式会重置为“自动推荐”。HTML、PDF、DOCX 保留原格式；MD 默认生成带署名的纯文本 HTML 阅读版。需要保留 Markdown 语法供编辑时，手动选择“保留原格式”。密码包始终由用户主动选择。
+
+HTML 首次声明会使用本机 localStorage / IndexedDB 记录；存储可用时首次显示后不再重复。存储不可用时仍显示声明，重新打开可能再次显示。不会写入 Aru 房间状态。
+
+可选“HTML 署名自动恢复”通过 MutationObserver 恢复被普通删除的署名节点或注入样式。它不禁用游戏或卡片的交互，不禁用右键或复制。拥有源代码的人或 AI 仍可移除恢复逻辑，因此不构成防 AI 去水印保证。
+
+PDF 新版禁用对象流和自动表单外观重绘，生成后重新加载并核对页数；下载完成后可在新标签中预览。兼容导出和重新解析不等于所有阅读器都已通过实际渲染测试。如遇阅读器报错，请保留原始 PDF，并提供具体错误信息。
+
+补充测试：`node tests/popup.test.cjs`、`node tests/export.test.cjs`。PDF 保存参数与重新读取流程使用模拟对象测试，不能替代真实浏览器和 PDF 阅读器验证。
