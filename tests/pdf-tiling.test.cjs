@@ -1,0 +1,6 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');const calls=[],elements=new Map();let opacity;
+const ctx={scale(){},translate(){},rotate(){},measureText:t=>({width:[...t].length*16}),fillText:(...args)=>calls.push(args),set fillStyle(v){opacity=v}};
+const document={getElementById(id){if(!elements.has(id))elements.set(id,{value:id==='opacity'?'22':'original',style:{},classList:{toggle(){}},addEventListener(){}});return elements.get(id)},createElement:()=>({getContext:()=>ctx,toDataURL:()=> 'data:image/png;base64,test'})};
+const sandbox=vm.createContext({document,TextEncoder,console,window:{}});vm.runInContext(fs.readFileSync(require('node:path').join(__dirname,'../app.js'),'utf8'),sandbox);
+vm.runInContext(`fullPagePDFStamp(595,842,{author:'小红书 @老师',opacity:.22})`,sandbox);assert.ok(calls.length>40);assert.equal(opacity,'rgba(55,62,74,0.22)');assert.ok(calls.some(c=>c[1]<-297));assert.ok(calls.some(c=>c[1]>297));assert.ok(calls.some(c=>c[2]<-421));assert.ok(calls.some(c=>c[2]>421));console.log('PASS full-page repeated marks extend beyond all page edges at requested transparency');
+calls.length=0;vm.runInContext(`fullPagePDFStamp(595,842,{author:'很长的作者署名'.repeat(12),opacity:.1})`,sandbox);assert.ok(calls.every(c=>[...c[0]].length*16<=240));console.log('PASS long signatures wrap inside tiles');
